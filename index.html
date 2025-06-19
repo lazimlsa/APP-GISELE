@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>App da Gisele</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     /* Animações personalizadas */
     .fade-in {
@@ -37,6 +38,10 @@
           <input type="text" id="description" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" required>
         </div>
         <div>
+          <label for="date" class="block text-sm font-medium text-gray-700">Data</label>
+          <input type="date" id="date" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+        </div>
+        <div>
           <label for="amount" class="block text-sm font-medium text-gray-700">Valor (R$)</label>
           <input type="number" id="amount" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" step="0.01" required>
         </div>
@@ -57,6 +62,7 @@
       <p class="text-gray-600">Entradas: <span id="total-income" class="text-green-600 font-medium">R$ 0,00</span></p>
       <p class="text-gray-600">Saídas: <span id="total-expense" class="text-red-600 font-medium">R$ 0,00</span></p>
       <p class="font-bold text-gray-800">Saldo: <span id="balance" class="text-indigo-600">R$ 0,00</span></p>
+      <button id="save-pdf" class="mt-4 w-full bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 transition hover-scale">Salvar como PDF</button>
     </div>
 
     <!-- Lista de transações -->
@@ -76,6 +82,7 @@
     const totalIncome = document.getElementById('total-income');
     const totalExpense = document.getElementById('total-expense');
     const balance = document.getElementById('balance');
+    const savePdfButton = document.getElementById('save-pdf');
 
     // Função para formatar valores em reais
     function formatMoney(value) {
@@ -111,7 +118,7 @@
         const li = document.createElement('li');
         li.classList.add('flex', 'justify-between', 'p-3', 'border-b', 'hover:bg-gray-50', 'rounded-lg', 'fade-in');
         li.innerHTML = `
-          <span class="text-gray-700">${transaction.description} (${transaction.type === 'income' ? 'Entrada' : 'Saída'})</span>
+          <span class="text-gray-700">${transaction.description} (${transaction.date || 'Sem data'} - ${transaction.type === 'income' ? 'Entrada' : 'Saída'})</span>
           <span class="${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'} font-medium">
             ${formatMoney(transaction.amount)}
             <button class="text-red-500 hover:text-red-700 ml-2 transition" onclick="deleteTransaction(${index})">Excluir</button>
@@ -125,10 +132,11 @@
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const description = document.getElementById('description').value;
+      const date = document.getElementById('date').value;
       const amount = parseFloat(document.getElementById('amount').value);
       const type = document.getElementById('type').value;
 
-      transactions.push({ description, amount, type });
+      transactions.push({ description, date, amount, type });
       localStorage.setItem('transactions', JSON.stringify(transactions));
       updateSummary();
       displayTransactions();
@@ -142,6 +150,46 @@
       updateSummary();
       displayTransactions();
     }
+
+    // Função para salvar como PDF
+    savePdfButton.addEventListener('click', () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      let yOffset = 10;
+
+      doc.text('Resumo Financeiro - App da Gisele', 10, yOffset);
+      yOffset += 10;
+
+      const income = transactions
+        .filter(t => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0);
+      const expense = transactions
+        .filter(t => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0);
+      const total = income - expense;
+
+      doc.text(`Entradas: ${formatMoney(income)}`, 10, yOffset);
+      yOffset += 10;
+      doc.text(`Saídas: ${formatMoney(expense)}`, 10, yOffset);
+      yOffset += 10;
+      doc.text(`Saldo: ${formatMoney(total)}`, 10, yOffset);
+      yOffset += 10;
+
+      doc.text('Transações:', 10, yOffset);
+      yOffset += 10;
+      transactions.forEach(transaction => {
+        const dateStr = transaction.date ? `(${new Date(transaction.date).toLocaleDateString('pt-BR')})` : '(Sem data)';
+        const line = `${transaction.description} ${dateStr} - ${transaction.type === 'income' ? 'Entrada' : 'Saída'}: ${formatMoney(transaction.amount)}`;
+        if (yOffset > 280) {
+          doc.addPage();
+          yOffset = 10;
+        }
+        doc.text(line, 10, yOffset);
+        yOffset += 10;
+      });
+
+      doc.save('resumo_app_da_gisele.pdf');
+    });
 
     // Inicializar a exibição
     updateSummary();
