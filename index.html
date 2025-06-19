@@ -97,6 +97,11 @@
       balance.textContent = formatMoney(total);
       balance.classList.toggle('text-green-600', total >= 0);
       balance.classList.toggle('text-red-600', total < 0);
+
+      // Exibir mensagem se o saldo for negativo
+      if (total < 0) {
+        alert("Se controla, menina!");
+      }
     }
 
     // Função para exibir as transações
