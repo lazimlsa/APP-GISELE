@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>App da Gisele</title>
+  <title>LSA App Controle de Gastos Simples</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800&display=swap" rel="stylesheet">
   <style>
     /* Animações personalizadas */
     .fade-in {
@@ -21,12 +22,22 @@
     .hover-scale:hover {
       transform: scale(1.05);
     }
+    .animate-slide-in {
+      animation: slideIn 0.6s ease-out;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-100 to-purple-100 min-h-screen font-sans">
+<body class="bg-gray-100 min-h-screen font-sans">
   <div class="container mx-auto p-6 max-w-lg">
-    <h1 class="text-3xl font-extrabold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
-      App da Gisele
+    <h1 class="text-3xl md:text-4xl font-extrabold text-center mb-8 font-[Inter] underline decoration-blue-500 decoration-2 animate-slide-in flex items-center justify-center gap-2 bg-gray-200 rounded-lg px-4 py-2">
+      <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zm0 10c-3.313 0-6-2.687-6-6s2.687-6 6-6 6 2.687 6 6-2.687 6-6 6z"></path>
+      </svg>
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-gray-800">LSA App Controle de Gastos Simples</span>
     </h1>
 
     <!-- Formulário para adicionar transação -->
@@ -35,34 +46,34 @@
       <form id="transaction-form" class="space-y-4">
         <div>
           <label for="description" class="block text-sm font-medium text-gray-700">Descrição</label>
-          <input type="text" id="description" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" required>
+          <input type="text" id="description" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
         </div>
         <div>
           <label for="date" class="block text-sm font-medium text-gray-700">Data</label>
-          <input type="date" id="date" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
+          <input type="date" id="date" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
         </div>
         <div>
           <label for="amount" class="block text-sm font-medium text-gray-700">Valor (R$)</label>
-          <input type="number" id="amount" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" step="0.01" required>
+          <input type="number" id="amount" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" step="0.01" required>
         </div>
         <div>
           <label for="type" class="block text-sm font-medium text-gray-700">Tipo</label>
-          <select id="type" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" required>
+          <select id="type" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
             <option value="income">Entrada</option>
             <option value="expense">Saída</option>
           </select>
         </div>
-        <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white p-3 rounded-lg hover:from-indigo-600 hover:to-purple-600 transition hover-scale">Adicionar</button>
+        <button type="submit" class="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition hover-scale">Adicionar</button>
       </form>
     </div>
 
     <!-- Resumo financeiro -->
     <div class="bg-white p-6 rounded-xl shadow-lg mb-6 fade-in">
       <h2 class="text-xl font-semibold mb-4 text-gray-800">Resumo</h2>
-      <p class="text-gray-600">Entradas: <span id="total-income" class="text-green-600 font-medium">R$ 0,00</span></p>
-      <p class="text-gray-600">Saídas: <span id="total-expense" class="text-red-600 font-medium">R$ 0,00</span></p>
-      <p class="font-bold text-gray-800">Saldo: <span id="balance" class="text-indigo-600">R$ 0,00</span></p>
-      <button id="save-pdf" class="mt-4 w-full bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 transition hover-scale">Salvar como PDF</button>
+      <p class="text-gray-600">Entradas: <span id="total-income" class="text-green-500 font-medium">R$ 0,00</span></p>
+      <p class="text-gray-600">Saídas: <span id="total-expense" class="text-red-500 font-medium">R$ 0,00</span></p>
+      <p class="font-bold text-gray-800">Saldo: <span id="balance" class="text-blue-500">R$ 0,00</span></p>
+      <button id="save-pdf" class="mt-4 w-full bg-gray-500 text-white p-2 rounded-lg hover:bg-gray-600 transition hover-scale">Salvar como PDF</button>
     </div>
 
     <!-- Lista de transações -->
@@ -102,13 +113,8 @@
       totalIncome.textContent = formatMoney(income);
       totalExpense.textContent = formatMoney(expense);
       balance.textContent = formatMoney(total);
-      balance.classList.toggle('text-green-600', total >= 0);
-      balance.classList.toggle('text-red-600', total < 0);
-
-      // Exibir mensagem se o saldo for negativo
-      if (total < 0) {
-        alert("Se controla, menina!");
-      }
+      balance.classList.toggle('text-green-500', total >= 0);
+      balance.classList.toggle('text-red-500', total < 0);
     }
 
     // Função para exibir as transações
@@ -119,7 +125,7 @@
         li.classList.add('flex', 'justify-between', 'p-3', 'border-b', 'hover:bg-gray-50', 'rounded-lg', 'fade-in');
         li.innerHTML = `
           <span class="text-gray-700">${transaction.description} (${transaction.date || 'Sem data'} - ${transaction.type === 'income' ? 'Entrada' : 'Saída'})</span>
-          <span class="${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'} font-medium">
+          <span class="${transaction.type === 'income' ? 'text-green-500' : 'text-red-500'} font-medium">
             ${formatMoney(transaction.amount)}
             <button class="text-red-500 hover:text-red-700 ml-2 transition" onclick="deleteTransaction(${index})">Excluir</button>
           </span>
@@ -157,7 +163,7 @@
       const doc = new jsPDF();
       let yOffset = 10;
 
-      doc.text('Resumo Financeiro - App da Gisele', 10, yOffset);
+      doc.text('Resumo Financeiro - LSA App Controle de Gastos Simples', 10, yOffset);
       yOffset += 10;
 
       const income = transactions
@@ -188,7 +194,7 @@
         yOffset += 10;
       });
 
-      doc.save('resumo_app_da_gisele.pdf');
+      doc.save('resumo_lsa_app_controle_de_gastos_simples.pdf');
     });
 
     // Inicializar a exibição
